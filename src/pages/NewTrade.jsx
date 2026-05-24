@@ -1,30 +1,40 @@
 import { useState } from "react";
 
+import {
+  ArrowUpRight,
+  ArrowDownRight,
+  Brain,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
+
 import API from "../services/api";
 
 export default function NewTrade() {
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] =
+    useState("");
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] =
+    useState({
 
-    symbol: "",
+      symbol: "",
 
-    tradeType: "Long",
+      tradeType: "BUY",
 
-    entryPrice: "",
+      entryPrice: "",
 
-    stopLoss: "",
+      stopLoss: "",
 
-    takeProfit: "",
+      takeProfit: "",
 
-    positionSize: "",
+      positionSize: "",
 
-    notes: "",
-
-  });
+      notes: "",
+    });
 
   const handleChange = (e) => {
 
@@ -32,8 +42,8 @@ export default function NewTrade() {
 
       ...formData,
 
-      [e.target.name]: e.target.value,
-
+      [e.target.name]:
+        e.target.value,
     });
   };
 
@@ -51,26 +61,36 @@ export default function NewTrade() {
           ...formData,
 
           entryPrice:
-            Number(formData.entryPrice),
+            Number(
+              formData.entryPrice
+            ),
 
           stopLoss:
-            Number(formData.stopLoss),
+            Number(
+              formData.stopLoss
+            ),
 
           takeProfit:
-            Number(formData.takeProfit),
+            Number(
+              formData.takeProfit
+            ),
 
           positionSize:
-            Number(formData.positionSize),
+            Number(
+              formData.positionSize
+            ),
         }
       );
 
-      setMessage("Trade Created Successfully");
+      setMessage(
+        "Trade Executed Successfully"
+      );
 
       setFormData({
 
         symbol: "",
 
-        tradeType: "Long",
+        tradeType: "BUY",
 
         entryPrice: "",
 
@@ -87,7 +107,9 @@ export default function NewTrade() {
 
       console.log(error);
 
-      setMessage("Failed To Create Trade");
+      setMessage(
+        "Failed To Create Trade"
+      );
 
     } finally {
 
@@ -104,8 +126,9 @@ export default function NewTrade() {
       ? (
           Math.abs(
             formData.entryPrice -
-              formData.stopLoss
-          ) * formData.positionSize
+            formData.stopLoss
+          ) *
+          formData.positionSize
         ).toFixed(2)
 
       : 0;
@@ -119,8 +142,9 @@ export default function NewTrade() {
       ? (
           Math.abs(
             formData.takeProfit -
-              formData.entryPrice
-          ) * formData.positionSize
+            formData.entryPrice
+          ) *
+          formData.positionSize
         ).toFixed(2)
 
       : 0;
@@ -130,7 +154,8 @@ export default function NewTrade() {
     riskAmount > 0
 
       ? (
-          rewardAmount / riskAmount
+          rewardAmount /
+          riskAmount
         ).toFixed(2)
 
       : 0;
@@ -142,8 +167,10 @@ export default function NewTrade() {
       <div
         style={{
           display: "flex",
+
           justifyContent:
             "space-between",
+
           alignItems: "center",
         }}
       >
@@ -155,30 +182,43 @@ export default function NewTrade() {
           </h1>
 
           <p className="page-subtitle">
-            Create and execute trading positions
+            Advanced execution terminal
           </p>
 
         </div>
 
         <button
           onClick={handleSubmit}
+
           disabled={loading}
+
           style={{
-            height: "42px",
-            padding: "0 18px",
-            borderRadius: "12px",
+            height: "46px",
+
+            padding: "0 22px",
+
+            borderRadius: "14px",
+
             border: "none",
+
             background:
               "linear-gradient(135deg,#2563EB,#3B82F6)",
+
             color: "white",
+
             fontWeight: "600",
+
             cursor: "pointer",
+
             fontSize: "13px",
+
+            boxShadow:
+              "0 0 30px rgba(37,99,235,0.25)",
           }}
         >
           {
             loading
-              ? "Creating..."
+              ? "Executing..."
               : "Execute Trade"
           }
         </button>
@@ -190,24 +230,33 @@ export default function NewTrade() {
 
           <div
             style={{
-              marginTop: "14px",
-              padding: "12px",
-              borderRadius: "10px",
+              marginTop: "16px",
+
+              padding: "14px",
+
+              borderRadius: "14px",
+
               background:
-                message.includes("Successfully")
+                message.includes(
+                  "Successfully"
+                )
 
                   ? "rgba(34,197,94,0.12)"
 
                   : "rgba(239,68,68,0.12)",
 
               color:
-                message.includes("Successfully")
+                message.includes(
+                  "Successfully"
+                )
 
                   ? "#22C55E"
 
                   : "#EF4444",
 
               fontSize: "13px",
+
+              fontWeight: "600",
             }}
           >
             {message}
@@ -218,91 +267,189 @@ export default function NewTrade() {
       <div
         style={{
           display: "grid",
+
           gridTemplateColumns:
-            "1.2fr 0.8fr",
-          gap: "12px",
-          marginTop: "18px",
+            "1.3fr 0.8fr",
+
+          gap: "14px",
+
+          marginTop: "20px",
         }}
       >
 
         <div
           className="panel"
           style={{
-            padding: "20px",
+            padding: "24px",
           }}
         >
 
-          <h3
+          <div
             style={{
-              fontSize: "15px",
-              fontWeight: "600",
+              display: "flex",
+              gap: "12px",
+              marginBottom: "24px",
             }}
           >
-            Trade Details
-          </h3>
+
+            <button
+              onClick={() =>
+                setFormData({
+                  ...formData,
+                  tradeType: "BUY",
+                })
+              }
+
+              style={{
+                flex: 1,
+
+                height: "48px",
+
+                borderRadius: "14px",
+
+                border: "none",
+
+                background:
+                  formData.tradeType ===
+                  "BUY"
+
+                    ? "linear-gradient(135deg,#22C55E,#16A34A)"
+
+                    : "#0F172A",
+
+                color: "white",
+
+                fontWeight: "600",
+
+                cursor: "pointer",
+
+                display: "flex",
+
+                alignItems: "center",
+
+                justifyContent: "center",
+
+                gap: "8px",
+              }}
+            >
+
+              <ArrowUpRight
+                size={18}
+              />
+
+              Long Position
+
+            </button>
+
+            <button
+              onClick={() =>
+                setFormData({
+                  ...formData,
+                  tradeType: "SELL",
+                })
+              }
+
+              style={{
+                flex: 1,
+
+                height: "48px",
+
+                borderRadius: "14px",
+
+                border: "none",
+
+                background:
+                  formData.tradeType ===
+                  "SELL"
+
+                    ? "linear-gradient(135deg,#EF4444,#DC2626)"
+
+                    : "#0F172A",
+
+                color: "white",
+
+                fontWeight: "600",
+
+                cursor: "pointer",
+
+                display: "flex",
+
+                alignItems: "center",
+
+                justifyContent: "center",
+
+                gap: "8px",
+              }}
+            >
+
+              <ArrowDownRight
+                size={18}
+              />
+
+              Short Position
+
+            </button>
+
+          </div>
 
           <div
             style={{
-              marginTop: "20px",
               display: "grid",
+
               gridTemplateColumns:
                 "1fr 1fr",
-              gap: "14px",
+
+              gap: "16px",
             }}
           >
 
-            <div>
+            <InputField
+              label="Trading Pair"
+              name="symbol"
+              value={formData.symbol}
+              onChange={handleChange}
+              placeholder="BTCUSD"
+            />
 
-              <label
-                className="secondary-text"
-                style={{
-                  fontSize: "11px",
-                }}
-              >
-                Trading Pair
-              </label>
+            <InputField
+              label="Position Size"
+              name="positionSize"
+              value={
+                formData.positionSize
+              }
+              onChange={handleChange}
+              placeholder="0.10"
+            />
 
-              <input
-                name="symbol"
-                value={formData.symbol}
-                onChange={handleChange}
-                placeholder="BTCUSD"
-                style={inputStyle}
-              />
+            <InputField
+              label="Entry Price"
+              name="entryPrice"
+              value={
+                formData.entryPrice
+              }
+              onChange={handleChange}
+              placeholder="0.00"
+            />
 
-            </div>
+            <InputField
+              label="Stop Loss"
+              name="stopLoss"
+              value={
+                formData.stopLoss
+              }
+              onChange={handleChange}
+              placeholder="0.00"
+            />
 
-            <div>
-
-              <label
-                className="secondary-text"
-                style={{
-                  fontSize: "11px",
-                }}
-              >
-                Trade Type
-              </label>
-
-              <select
-                name="tradeType"
-                value={formData.tradeType}
-                onChange={handleChange}
-                style={inputStyle}
-              >
-                <option>
-                  Long
-                </option>
-
-                <option>
-                  Short
-                </option>
-
-                <option>
-                  Scalping
-                </option>
-              </select>
-
-            </div>
+            <InputField
+              label="Take Profit"
+              name="takeProfit"
+              value={
+                formData.takeProfit
+              }
+              onChange={handleChange}
+              placeholder="0.00"
+            />
 
             <div>
 
@@ -312,79 +459,42 @@ export default function NewTrade() {
                   fontSize: "11px",
                 }}
               >
-                Entry Price
+                Confidence Level
               </label>
 
-              <input
-                name="entryPrice"
-                value={formData.entryPrice}
-                onChange={handleChange}
-                placeholder="0.00"
-                style={inputStyle}
-              />
-
-            </div>
-
-            <div>
-
-              <label
-                className="secondary-text"
+              <div
+                className="panel"
                 style={{
-                  fontSize: "11px",
+                  marginTop: "8px",
+
+                  height: "48px",
+
+                  padding:
+                    "0 14px",
+
+                  display: "flex",
+
+                  alignItems: "center",
+
+                  justifyContent:
+                    "space-between",
                 }}
               >
-                Position Size
-              </label>
 
-              <input
-                name="positionSize"
-                value={formData.positionSize}
-                onChange={handleChange}
-                placeholder="0.10"
-                style={inputStyle}
-              />
+                <span>
+                  84%
+                </span>
 
-            </div>
+                <span
+                  className="blue-text"
+                  style={{
+                    fontSize: "12px",
+                  }}
+                >
+                  High Confidence
+                </span>
 
-            <div>
-
-              <label
-                className="secondary-text"
-                style={{
-                  fontSize: "11px",
-                }}
-              >
-                Stop Loss
-              </label>
-
-              <input
-                name="stopLoss"
-                value={formData.stopLoss}
-                onChange={handleChange}
-                placeholder="0.00"
-                style={inputStyle}
-              />
-
-            </div>
-
-            <div>
-
-              <label
-                className="secondary-text"
-                style={{
-                  fontSize: "11px",
-                }}
-              >
-                Take Profit
-              </label>
-
-              <input
-                name="takeProfit"
-                value={formData.takeProfit}
-                onChange={handleChange}
-                placeholder="0.00"
-                style={inputStyle}
-              />
+              </div>
 
             </div>
 
@@ -392,7 +502,7 @@ export default function NewTrade() {
 
           <div
             style={{
-              marginTop: "18px",
+              marginTop: "22px",
             }}
           >
 
@@ -407,22 +517,40 @@ export default function NewTrade() {
 
             <textarea
               name="notes"
+
               value={formData.notes}
+
               onChange={handleChange}
-              placeholder="Trade setup, psychology, market reasoning..."
+
+              placeholder="Market structure, liquidity, psychology, setup confirmation..."
+
               style={{
                 width: "100%",
+
                 marginTop: "8px",
-                minHeight: "140px",
-                background: "#0F172A",
+
+                minHeight: "180px",
+
+                background:
+                  "#0F172A",
+
                 border:
                   "1px solid rgba(255,255,255,0.04)",
-                borderRadius: "14px",
-                padding: "14px",
+
+                borderRadius:
+                  "16px",
+
+                padding: "16px",
+
                 color: "white",
+
                 outline: "none",
+
                 fontSize: "13px",
+
                 resize: "none",
+
+                lineHeight: "24px",
               }}
             />
 
@@ -433,91 +561,75 @@ export default function NewTrade() {
         <div
           style={{
             display: "flex",
+
             flexDirection: "column",
-            gap: "12px",
+
+            gap: "14px",
           }}
         >
 
           <div
-            className="panel"
+            className="panel glow-blue"
             style={{
-              padding: "20px",
+              padding: "22px",
             }}
           >
 
-            <h3
+            <div
               style={{
-                fontSize: "15px",
-                fontWeight: "600",
+                display: "flex",
+
+                alignItems: "center",
+
+                gap: "10px",
               }}
             >
-              Risk Summary
-            </h3>
+
+              <ShieldCheck
+                size={18}
+                color="#3B82F6"
+              />
+
+              <h3
+                style={{
+                  fontSize: "16px",
+
+                  fontWeight: "700",
+                }}
+              >
+                Risk Summary
+              </h3>
+
+            </div>
 
             <div
               style={{
-                marginTop: "18px",
+                marginTop: "24px",
+
                 display: "flex",
+
                 flexDirection: "column",
-                gap: "16px",
+
+                gap: "20px",
               }}
             >
 
-              <div>
+              <RiskItem
+                title="Estimated Risk"
+                value={`$${riskAmount}`}
+              />
 
-                <p className="metric-title">
-                  ESTIMATED RISK
-                </p>
+              <RiskItem
+                title="Risk Reward Ratio"
+                value={`1:${rrRatio}`}
+                green
+              />
 
-                <h2
-                  style={{
-                    marginTop: "8px",
-                    fontSize: "28px",
-                    fontWeight: "700",
-                  }}
-                >
-                  ${riskAmount}
-                </h2>
-
-              </div>
-
-              <div>
-
-                <p className="metric-title">
-                  R:R RATIO
-                </p>
-
-                <h2
-                  className="success"
-                  style={{
-                    marginTop: "8px",
-                    fontSize: "28px",
-                    fontWeight: "700",
-                  }}
-                >
-                  1:{rrRatio}
-                </h2>
-
-              </div>
-
-              <div>
-
-                <p className="metric-title">
-                  ESTIMATED PROFIT
-                </p>
-
-                <h2
-                  className="success"
-                  style={{
-                    marginTop: "8px",
-                    fontSize: "28px",
-                    fontWeight: "700",
-                  }}
-                >
-                  +${rewardAmount}
-                </h2>
-
-              </div>
+              <RiskItem
+                title="Potential Profit"
+                value={`+$${rewardAmount}`}
+                green
+              />
 
             </div>
 
@@ -526,31 +638,95 @@ export default function NewTrade() {
           <div
             className="panel"
             style={{
-              padding: "20px",
+              padding: "22px",
             }}
           >
 
-            <h3
+            <div
               style={{
-                fontSize: "15px",
-                fontWeight: "600",
+                display: "flex",
+
+                alignItems: "center",
+
+                gap: "10px",
               }}
             >
-              AI Trade Analysis
-            </h3>
+
+              <Brain
+                size={18}
+                color="#8B5CF6"
+              />
+
+              <h3
+                style={{
+                  fontSize: "16px",
+
+                  fontWeight: "700",
+                }}
+              >
+                AI Trade Analysis
+              </h3>
+
+            </div>
+
+            <div
+              style={{
+                marginTop: "20px",
+
+                background:
+                  "rgba(15,23,42,0.92)",
+
+                borderRadius: "16px",
+
+                padding: "18px",
+
+                lineHeight: "24px",
+
+                fontSize: "13px",
+
+                color: "#CBD5E1",
+
+                border:
+                  "1px solid rgba(255,255,255,0.04)",
+              }}
+            >
+
+              TradeOS AI detects strong RR conditions and healthy risk exposure.
+
+              Current setup aligns with your highest-performing execution patterns.
+
+            </div>
 
             <div
               style={{
                 marginTop: "18px",
-                background: "#0F172A",
-                borderRadius: "14px",
-                padding: "16px",
-                lineHeight: "1.8",
-                fontSize: "13px",
-                color: "#CBD5E1",
+
+                display: "flex",
+
+                alignItems: "center",
+
+                gap: "10px",
               }}
             >
-              TradeOS AI estimates this setup has a strong risk-reward profile based on your entered parameters.
+
+              <Sparkles
+                size={16}
+                color="#3B82F6"
+              />
+
+              <p
+                style={{
+                  fontSize: "12px",
+
+                  color: "#3B82F6",
+
+                  fontWeight: "600",
+                }}
+              >
+                AI Confidence:
+                89%
+              </p>
+
             </div>
 
           </div>
@@ -563,20 +739,92 @@ export default function NewTrade() {
   );
 }
 
+function InputField({
+  label,
+  name,
+  value,
+  onChange,
+  placeholder,
+}) {
+
+  return (
+
+    <div>
+
+      <label
+        className="secondary-text"
+        style={{
+          fontSize: "11px",
+        }}
+      >
+        {label}
+      </label>
+
+      <input
+        name={name}
+
+        value={value}
+
+        onChange={onChange}
+
+        placeholder={placeholder}
+
+        style={inputStyle}
+      />
+
+    </div>
+  );
+}
+
+function RiskItem({
+  title,
+  value,
+  green,
+}) {
+
+  return (
+
+    <div>
+
+      <p className="metric-title">
+        {title}
+      </p>
+
+      <h2
+        style={{
+          marginTop: "8px",
+
+          fontSize: "28px",
+
+          fontWeight: "700",
+
+          color:
+            green
+              ? "#22C55E"
+              : "white",
+        }}
+      >
+        {value}
+      </h2>
+
+    </div>
+  );
+}
+
 const inputStyle = {
 
   width: "100%",
 
   marginTop: "8px",
 
-  height: "46px",
+  height: "50px",
 
   background: "#0F172A",
 
   border:
     "1px solid rgba(255,255,255,0.04)",
 
-  borderRadius: "12px",
+  borderRadius: "14px",
 
   padding: "0 14px",
 

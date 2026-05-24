@@ -1,276 +1,544 @@
-const trades = [
-  {
-    pair: "BTCUSD",
-    type: "Long",
-    entry: "67,245",
-    current: "68,120",
-    pnl: "+$875",
-    leverage: "10x",
-    status: "Running",
-  },
+import {
+  TrendingUp,
+  ShieldAlert,
+  Activity,
+  Wallet,
+  ArrowUpRight,
+  ArrowDownRight,
+  XCircle,
+} from "lucide-react";
 
-  {
-    pair: "ETHUSD",
-    type: "Short",
-    entry: "3,420",
-    current: "3,280",
-    pnl: "+$420",
-    leverage: "5x",
-    status: "Running",
-  },
+import {
+  useEffect,
+  useState,
+} from "react";
 
-  {
-    pair: "XAUUSD",
-    type: "Long",
-    entry: "2,338",
-    current: "2,320",
-    pnl: "-$120",
-    leverage: "8x",
-    status: "Risk",
-  },
-
-  {
-    pair: "EURUSD",
-    type: "Scalp",
-    entry: "1.0854",
-    current: "1.0832",
-    pnl: "+$222",
-    leverage: "15x",
-    status: "Running",
-  },
-];
+import API from "../services/api";
 
 export default function OpenTrades() {
+
+  const [trades, setTrades] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+
+    fetchOpenTrades();
+
+  }, []);
+
+  const fetchOpenTrades =
+    async () => {
+
+      try {
+
+        const response =
+          await API.get(
+            "/trades/open"
+          );
+
+        setTrades(response.data);
+
+      } catch (error) {
+
+        console.log(error);
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
+
+  const closeTrade =
+    async (tradeId) => {
+
+      try {
+
+        await API.put(
+          `/trades/${tradeId}/close`,
+          {
+            closePrice: 0,
+          }
+        );
+
+        fetchOpenTrades();
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+  if (loading) {
+
+    return (
+
+      <div
+        style={{
+          color: "white",
+          padding: "40px",
+        }}
+      >
+        Loading Open Trades...
+      </div>
+    );
+  }
+
   return (
+
     <div>
+
       <div
         style={{
           display: "flex",
+
           justifyContent:
             "space-between",
+
           alignItems: "center",
         }}
       >
+
         <div>
+
           <h1 className="page-title">
             Open Trades
           </h1>
 
           <p className="page-subtitle">
-            Monitor active market positions
+            Live market execution and active positions
           </p>
+
         </div>
 
-        <button
-          style={{
-            height: "42px",
-            padding: "0 18px",
-            borderRadius: "12px",
-            border: "none",
-            background:
-              "linear-gradient(135deg,#2563EB,#3B82F6)",
-            color: "white",
-            fontWeight: "600",
-            cursor: "pointer",
-            fontSize: "13px",
-          }}
-        >
-          + New Trade
-        </button>
-      </div>
-
-      <div
-        className="panel"
-        style={{
-          marginTop: "18px",
-          padding: "18px",
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "1.2fr 1fr 1fr 1fr 1fr 1fr 1fr",
-            paddingBottom: "14px",
-            borderBottom:
-              "1px solid rgba(255,255,255,0.03)",
-            color: "#7B849A",
-            fontSize: "11px",
-            fontWeight: "600",
-            letterSpacing: "0.5px",
-          }}
-        >
-          <div>PAIR</div>
-          <div>TYPE</div>
-          <div>ENTRY</div>
-          <div>CURRENT</div>
-          <div>PNL</div>
-          <div>LEVERAGE</div>
-          <div>STATUS</div>
-        </div>
-
-        <div
-          style={{
-            marginTop: "4px",
-          }}
-        >
-          {trades.map((trade, index) => (
-            <div
-              key={index}
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "1.2fr 1fr 1fr 1fr 1fr 1fr 1fr",
-                alignItems: "center",
-                padding: "16px 0",
-                borderBottom:
-                  "1px solid rgba(255,255,255,0.02)",
-                fontSize: "13px",
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: "600",
-                }}
-              >
-                {trade.pair}
-              </div>
-
-              <div
-                style={{
-                  color: "#94A3B8",
-                }}
-              >
-                {trade.type}
-              </div>
-
-              <div>
-                {trade.entry}
-              </div>
-
-              <div>
-                {trade.current}
-              </div>
-
-              <div
-                style={{
-                  color:
-                    trade.pnl.includes("-")
-                      ? "#EF4444"
-                      : "#22C55E",
-                  fontWeight: "600",
-                }}
-              >
-                {trade.pnl}
-              </div>
-
-              <div
-                style={{
-                  color: "#3B82F6",
-                  fontWeight: "600",
-                }}
-              >
-                {trade.leverage}
-              </div>
-
-              <div>
-                <span
-                  style={{
-                    padding: "6px 10px",
-                    borderRadius: "999px",
-                    fontSize: "11px",
-                    fontWeight: "600",
-                    background:
-                      trade.status === "Risk"
-                        ? "rgba(239,68,68,0.12)"
-                        : "rgba(34,197,94,0.12)",
-                    color:
-                      trade.status === "Risk"
-                        ? "#EF4444"
-                        : "#22C55E",
-                  }}
-                >
-                  {trade.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       <div
         style={{
           display: "grid",
+
           gridTemplateColumns:
-            "1fr 1fr 1fr",
-          gap: "12px",
-          marginTop: "12px",
+            "repeat(3,1fr)",
+
+          gap: "14px",
+
+          marginTop: "20px",
         }}
       >
-        <div
-          className="panel"
-          style={{
-            padding: "18px",
-          }}
-        >
-          <p className="metric-title">
-            TOTAL EXPOSURE
-          </p>
 
-          <h2
-            style={{
-              marginTop: "12px",
-              fontSize: "28px",
-              fontWeight: "700",
-            }}
-          >
-            $84,240
-          </h2>
-        </div>
+        <TopCard
+          title="TOTAL EXPOSURE"
+          value={`$${trades.reduce(
+            (total, trade) =>
+              total +
+              (
+                trade.entryPrice || 0
+              ),
+            0
+          )}`}
+          icon={
+            <Wallet
+              size={18}
+              color="#3B82F6"
+            />
+          }
+        />
 
-        <div
-          className="panel"
-          style={{
-            padding: "18px",
-          }}
-        >
-          <p className="metric-title">
-            ACTIVE POSITIONS
-          </p>
+        <TopCard
+          title="ACTIVE POSITIONS"
+          value={trades.length}
+          icon={
+            <Activity
+              size={18}
+              color="#22C55E"
+            />
+          }
+        />
 
-          <h2
-            style={{
-              marginTop: "12px",
-              fontSize: "28px",
-              fontWeight: "700",
-            }}
-          >
-            4
-          </h2>
-        </div>
+        <TopCard
+          title="UNREALIZED PNL"
+          value={`+$${trades.reduce(
+            (total, trade) =>
+              total +
+              (
+                trade.pnl || 0
+              ),
+            0
+          )}`}
+          green
+          icon={
+            <TrendingUp
+              size={18}
+              color="#22C55E"
+            />
+          }
+        />
 
-        <div
-          className="panel"
-          style={{
-            padding: "18px",
-          }}
-        >
-          <p className="metric-title">
-            UNREALIZED PNL
-          </p>
-
-          <h2
-            style={{
-              marginTop: "12px",
-              fontSize: "28px",
-              fontWeight: "700",
-              color: "#22C55E",
-            }}
-          >
-            +$1,397
-          </h2>
-        </div>
       </div>
+
+      {
+        trades.length === 0 && (
+
+          <div
+            className="panel"
+            style={{
+              marginTop: "18px",
+
+              padding: "40px",
+
+              textAlign: "center",
+            }}
+          >
+
+            <h2
+              style={{
+                fontSize: "24px",
+
+                fontWeight: "700",
+              }}
+            >
+              No Open Trades
+            </h2>
+
+            <p
+              className="secondary-text"
+              style={{
+                marginTop: "10px",
+              }}
+            >
+              Your active positions will appear here.
+            </p>
+
+          </div>
+        )
+      }
+
+      <div
+        style={{
+          marginTop: "14px",
+
+          display: "flex",
+
+          flexDirection: "column",
+
+          gap: "14px",
+        }}
+      >
+
+        {trades.map(
+          (trade, index) => (
+
+            <div
+              key={index}
+
+              className="panel"
+
+              style={{
+                padding: "22px",
+
+                display: "grid",
+
+                gridTemplateColumns:
+                  "1.2fr 1fr 1fr 1fr 1fr auto",
+
+                gap: "14px",
+
+                alignItems: "center",
+              }}
+            >
+
+              <div>
+
+                <div
+                  style={{
+                    display: "flex",
+
+                    alignItems: "center",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  <div
+                    style={{
+                      width: "46px",
+                      height: "46px",
+
+                      borderRadius: "14px",
+
+                      background:
+                        trade.tradeType ===
+                        "SELL"
+
+                          ? "rgba(239,68,68,0.12)"
+
+                          : "rgba(34,197,94,0.12)",
+
+                      display: "flex",
+
+                      alignItems: "center",
+
+                      justifyContent: "center",
+                    }}
+                  >
+
+                    {
+                      trade.tradeType ===
+                      "SELL"
+
+                        ? (
+                          <ArrowDownRight
+                            size={20}
+                            color="#EF4444"
+                          />
+                        )
+
+                        : (
+                          <ArrowUpRight
+                            size={20}
+                            color="#22C55E"
+                          />
+                        )
+                    }
+
+                  </div>
+
+                  <div>
+
+                    <h3
+                      style={{
+                        fontSize: "16px",
+
+                        fontWeight: "700",
+                      }}
+                    >
+                      {trade.symbol}
+                    </h3>
+
+                    <p
+                      className="secondary-text"
+                      style={{
+                        marginTop: "5px",
+
+                        fontSize: "12px",
+                      }}
+                    >
+                      {trade.tradeType}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <TradeStat
+                title="ENTRY"
+                value={trade.entryPrice}
+              />
+
+              <TradeStat
+                title="STOP LOSS"
+                value={trade.stopLoss}
+              />
+
+              <TradeStat
+                title="TAKE PROFIT"
+                value={trade.takeProfit}
+                blue
+              />
+
+              <div>
+
+                <h2
+                  style={{
+                    color:
+                      trade.pnl < 0
+
+                        ? "#EF4444"
+
+                        : "#22C55E",
+
+                    fontWeight: "700",
+
+                    fontSize: "28px",
+                  }}
+                >
+                  ${trade.pnl || 0}
+                </h2>
+
+                <div
+                  style={{
+                    marginTop: "10px",
+                  }}
+                >
+
+                  <span
+                    style={{
+                      padding:
+                        "6px 12px",
+
+                      borderRadius:
+                        "999px",
+
+                      fontSize: "11px",
+
+                      fontWeight: "600",
+
+                      background:
+                        "rgba(34,197,94,0.12)",
+
+                      color:
+                        "#22C55E",
+                    }}
+                  >
+                    OPEN
+                  </span>
+
+                </div>
+
+              </div>
+
+              <button
+                onClick={() =>
+                  closeTrade(
+                    trade.id
+                  )
+                }
+
+                style={{
+                  width: "42px",
+
+                  height: "42px",
+
+                  borderRadius: "12px",
+
+                  border: "none",
+
+                  background:
+                    "rgba(239,68,68,0.12)",
+
+                  display: "flex",
+
+                  alignItems: "center",
+
+                  justifyContent: "center",
+
+                  cursor: "pointer",
+                }}
+              >
+
+                <XCircle
+                  size={18}
+                  color="#EF4444"
+                />
+
+              </button>
+
+            </div>
+          )
+        )}
+
+      </div>
+
+    </div>
+  );
+}
+
+function TopCard({
+  title,
+  value,
+  icon,
+  green,
+}) {
+
+  return (
+
+    <div
+      className="panel"
+      style={{
+        padding: "20px",
+      }}
+    >
+
+      <div
+        style={{
+          display: "flex",
+
+          justifyContent:
+            "space-between",
+
+          alignItems: "center",
+        }}
+      >
+
+        <p className="metric-title">
+          {title}
+        </p>
+
+        <div className="card-icon">
+          {icon}
+        </div>
+
+      </div>
+
+      <h2
+        style={{
+          marginTop: "14px",
+
+          fontSize: "30px",
+
+          fontWeight: "700",
+
+          color:
+            green
+              ? "#22C55E"
+              : "white",
+        }}
+      >
+        {value}
+      </h2>
+
+    </div>
+  );
+}
+
+function TradeStat({
+  title,
+  value,
+  blue,
+}) {
+
+  return (
+
+    <div>
+
+      <p
+        className="metric-title"
+        style={{
+          marginBottom: "8px",
+        }}
+      >
+        {title}
+      </p>
+
+      <h3
+        style={{
+          fontSize: "18px",
+
+          fontWeight: "700",
+
+          color:
+            blue
+              ? "#3B82F6"
+              : "white",
+        }}
+      >
+        {value}
+      </h3>
+
     </div>
   );
 }

@@ -2,13 +2,51 @@ import {
   Search,
   Bell,
   ChevronDown,
+  Bitcoin,
 } from "lucide-react";
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  connectMarketSocket,
+  disconnectMarketSocket,
+} from "../../services/marketSocket";
 
 import {
   requestNotificationPermission,
 } from "../../services/oneSignal";
 
 export default function Topbar() {
+
+  const [btcPrice, setBtcPrice] =
+    useState(0);
+
+  useEffect(() => {
+
+    connectMarketSocket(
+      (data) => {
+
+        if (
+          data.symbol ===
+          "BTCUSDT"
+        ) {
+
+          setBtcPrice(
+            data.price
+          );
+        }
+      }
+    );
+
+    return () => {
+
+      disconnectMarketSocket();
+    };
+
+  }, []);
 
   return (
 
@@ -56,6 +94,60 @@ export default function Topbar() {
       >
 
         <div
+          className="panel glow-blue"
+          style={{
+            padding: "8px 16px",
+
+            display: "flex",
+
+            alignItems: "center",
+
+            gap: "12px",
+
+            background:
+              "rgba(15,23,42,0.92)",
+          }}
+        >
+
+          <Bitcoin
+            size={18}
+            color="#F7931A"
+          />
+
+          <div>
+
+            <p
+              style={{
+                fontSize: "10px",
+
+                color: "#7B849A",
+              }}
+            >
+              BTCUSDT LIVE
+            </p>
+
+            <h3
+              style={{
+                fontSize: "14px",
+
+                fontWeight: "700",
+
+                color: "#22C55E",
+              }}
+            >
+              $
+              {
+                btcPrice
+                  ? btcPrice.toLocaleString()
+                  : "Loading..."
+              }
+            </h3>
+
+          </div>
+
+        </div>
+
+        <div
           className="panel"
           style={{
             padding: "8px 12px",
@@ -88,7 +180,7 @@ export default function Topbar() {
               color: "#E5E7EB",
             }}
           >
-            Live Market
+            WebSocket Live
           </span>
 
         </div>

@@ -3,29 +3,23 @@ import {
   TrendingUp,
   Target,
   Activity,
+  Flame,
+  Brain,
+  ShieldCheck,
+  Newspaper,
 } from "lucide-react";
 
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  Tooltip,
-} from "recharts";
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 
-import { useEffect, useState } from "react";
+import {
+  createChart,
+} from "lightweight-charts";
 
 import API from "../services/api";
-
-const chartData = [
-  { day: "Mon", value: 4200 },
-  { day: "Tue", value: 5100 },
-  { day: "Wed", value: 4800 },
-  { day: "Thu", value: 6200 },
-  { day: "Fri", value: 7600 },
-  { day: "Sat", value: 7100 },
-  { day: "Sun", value: 8600 },
-];
 
 function MetricCard({
   title,
@@ -87,20 +81,140 @@ export default function Dashboard() {
     useState({
 
       totalPnl: 0,
-
       totalTrades: 0,
-
       winRate: 0,
-
       openTrades: 0,
     });
+
+  const [news, setNews] =
+    useState([]);
 
   const [loading, setLoading] =
     useState(true);
 
+  const chartContainerRef =
+    useRef(null);
+
   useEffect(() => {
 
     fetchDashboardData();
+
+    const interval =
+      setInterval(() => {
+
+        fetchDashboardData();
+
+      }, 30000);
+
+    return () =>
+      clearInterval(interval);
+
+  }, []);
+
+  useEffect(() => {
+
+    if (!chartContainerRef.current)
+      return;
+
+    const chart =
+      createChart(
+        chartContainerRef.current,
+        {
+          width:
+            chartContainerRef.current
+              .clientWidth,
+
+          height: 320,
+
+          layout: {
+
+            background: {
+              color: "transparent",
+            },
+
+            textColor: "#7B849A",
+          },
+
+          grid: {
+
+            vertLines: {
+              color:
+                "rgba(255,255,255,0.03)",
+            },
+
+            horzLines: {
+              color:
+                "rgba(255,255,255,0.03)",
+            },
+          },
+
+          rightPriceScale: {
+
+            borderColor:
+              "rgba(255,255,255,0.08)",
+          },
+
+          timeScale: {
+
+            borderColor:
+              "rgba(255,255,255,0.08)",
+          },
+        }
+      );
+
+    const candleSeries =
+      chart.addCandlestickSeries({
+
+        upColor: "#22C55E",
+
+        downColor: "#EF4444",
+
+        borderVisible: false,
+
+        wickUpColor: "#22C55E",
+
+        wickDownColor: "#EF4444",
+      });
+
+    candleSeries.setData([
+
+      {
+        time: 1735689600,
+        open: 96000,
+        high: 96800,
+        low: 95500,
+        close: 96500,
+      },
+
+      {
+        time: 1735776000,
+        open: 96500,
+        high: 97800,
+        low: 96000,
+        close: 97500,
+      },
+
+      {
+        time: 1735862400,
+        open: 97500,
+        high: 99000,
+        low: 97000,
+        close: 98800,
+      },
+
+      {
+        time: 1735948800,
+        open: 98800,
+        high: 100800,
+        low: 98200,
+        close: 100200,
+      },
+    ]);
+
+    return () => {
+
+      chart.remove();
+    };
 
   }, []);
 
@@ -109,12 +223,26 @@ export default function Dashboard() {
 
       try {
 
-        const response =
-          await API.get(
-            "/dashboard/summary"
-          );
+        const [
+          dashboardResponse,
+          newsResponse,
+        ] = await Promise.all([
 
-        setSummary(response.data);
+          API.get(
+            "/dashboard/summary"
+          ),
+
+          API.get("/news"),
+        ]);
+
+        setSummary(
+          dashboardResponse.data
+        );
+
+        setNews(
+          newsResponse.data.articles
+            ?.slice(0, 5) || []
+        );
 
       } catch (error) {
 
@@ -160,12 +288,9 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
-
           gridTemplateColumns:
             "repeat(4,1fr)",
-
           gap: "14px",
-
           marginTop: "22px",
         }}
       >
@@ -223,12 +348,9 @@ export default function Dashboard() {
       <div
         style={{
           display: "grid",
-
           gridTemplateColumns:
             "2.2fr 1fr",
-
           gap: "14px",
-
           marginTop: "14px",
         }}
       >
@@ -237,11 +359,8 @@ export default function Dashboard() {
           className="panel glow-green"
           style={{
             padding: "22px",
-
-            minHeight: "390px",
-
+            minHeight: "420px",
             position: "relative",
-
             overflow: "hidden",
           }}
         >
@@ -249,10 +368,8 @@ export default function Dashboard() {
           <div
             style={{
               display: "flex",
-
               justifyContent:
                 "space-between",
-
               alignItems: "center",
             }}
           >
@@ -262,24 +379,20 @@ export default function Dashboard() {
               <h3
                 style={{
                   fontSize: "18px",
-
                   fontWeight: "700",
-
-                  letterSpacing: "-0.5px",
                 }}
               >
-                Portfolio Analytics
+                BTCUSDT Market Chart
               </h3>
 
               <p
                 className="secondary-text"
                 style={{
                   marginTop: "6px",
-
                   fontSize: "12px",
                 }}
               >
-                Real-time portfolio growth and equity tracking
+                Professional candlestick market visualization
               </p>
 
             </div>
@@ -287,113 +400,36 @@ export default function Dashboard() {
             <div
               style={{
                 padding: "8px 12px",
-
                 borderRadius: "12px",
-
                 background:
                   "rgba(34,197,94,0.10)",
-
                 border:
                   "1px solid rgba(34,197,94,0.12)",
-
                 color: "#22C55E",
-
                 fontWeight: "600",
-
                 fontSize: "12px",
               }}
             >
-              Live Analytics
+              ACTIVE
             </div>
 
           </div>
 
           <div
+            ref={chartContainerRef}
             style={{
               width: "100%",
-
-              height: "280px",
-
-              marginTop: "26px",
+              height: "320px",
+              marginTop: "24px",
             }}
-          >
-
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
-
-              <AreaChart
-                data={chartData}
-              >
-
-                <defs>
-
-                  <linearGradient
-                    id="color"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-
-                    <stop
-                      offset="0%"
-                      stopColor="#22C55E"
-                      stopOpacity={0.45}
-                    />
-
-                    <stop
-                      offset="100%"
-                      stopColor="#22C55E"
-                      stopOpacity={0}
-                    />
-
-                  </linearGradient>
-
-                </defs>
-
-                <XAxis
-                  dataKey="day"
-
-                  tick={{
-                    fill: "#7B849A",
-                    fontSize: 11,
-                  }}
-
-                  axisLine={false}
-
-                  tickLine={false}
-                />
-
-                <Tooltip />
-
-                <Area
-                  type="monotone"
-
-                  dataKey="value"
-
-                  stroke="#22C55E"
-
-                  strokeWidth={3}
-
-                  fill="url(#color)"
-                />
-
-              </AreaChart>
-
-            </ResponsiveContainer>
-
-          </div>
+          />
 
         </div>
 
         <div
           style={{
             display: "flex",
-
             flexDirection: "column",
-
             gap: "14px",
           }}
         >
@@ -402,91 +438,43 @@ export default function Dashboard() {
             className="panel"
             style={{
               padding: "20px",
-
-              minHeight: "190px",
             }}
           >
 
-            <h3
-              style={{
-                fontSize: "15px",
-
-                fontWeight: "700",
-              }}
-            >
-              Account Stats
-            </h3>
-
             <div
               style={{
-                marginTop: "20px",
-
                 display: "flex",
-
-                flexDirection: "column",
-
-                gap: "16px",
+                alignItems: "center",
+                gap: "10px",
               }}
             >
 
-              <div
-                style={{
-                  display: "flex",
+              <ShieldCheck
+                size={18}
+                color="#22C55E"
+              />
 
-                  justifyContent:
-                    "space-between",
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "700",
                 }}
               >
-
-                <span className="secondary-text">
-                  Winning Trades
-                </span>
-
-                <span className="success">
-                  {summary.winningTrades}
-                </span>
-
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-
-                  justifyContent:
-                    "space-between",
-                }}
-              >
-
-                <span className="secondary-text">
-                  Closed Trades
-                </span>
-
-                <span>
-                  {summary.closedTrades}
-                </span>
-
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-
-                  justifyContent:
-                    "space-between",
-                }}
-              >
-
-                <span className="secondary-text">
-                  Discipline Score
-                </span>
-
-                <span className="blue-text">
-                  92%
-                </span>
-
-              </div>
+                Discipline Score
+              </h3>
 
             </div>
+
+            <h1
+              style={{
+                fontSize: "42px",
+                marginTop: "16px",
+                fontWeight: "800",
+                color: "#22C55E",
+              }}
+            >
+              92%
+            </h1>
 
           </div>
 
@@ -494,58 +482,165 @@ export default function Dashboard() {
             className="panel glow-blue"
             style={{
               padding: "20px",
-
-              minHeight: "190px",
             }}
           >
 
-            <h3
+            <div
               style={{
-                fontSize: "15px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
 
+              <Flame
+                size={18}
+                color="#F97316"
+              />
+
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "700",
+                }}
+              >
+                Winning Streak
+              </h3>
+
+            </div>
+
+            <h2
+              style={{
+                marginTop: "16px",
+                fontSize: "28px",
                 fontWeight: "700",
               }}
             >
-              AI Insights
-            </h3>
+              7 Days
+            </h2>
+
+          </div>
+
+          <div
+            className="panel glow-blue"
+            style={{
+              padding: "20px",
+            }}
+          >
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+
+              <Brain
+                size={18}
+                color="#3B82F6"
+              />
+
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "700",
+                }}
+              >
+                AI Market Insight
+              </h3>
+
+            </div>
 
             <p
               className="secondary-text"
               style={{
-                marginTop: "14px",
-
+                marginTop: "16px",
                 lineHeight: "24px",
-
-                fontSize: "13px",
+                fontSize: "12px",
               }}
             >
-              Your trading discipline improved by 18% this week.
-              AI analytics detected stronger risk management
-              consistency across your recent trades.
+              BTC momentum remains bullish with increasing volatility and strong buyer pressure.
             </p>
+
+          </div>
+
+          <div
+            className="panel"
+            style={{
+              padding: "18px",
+              minHeight: "320px",
+            }}
+          >
 
             <div
               style={{
-                marginTop: "18px",
-
-                padding: "10px 12px",
-
-                borderRadius: "12px",
-
-                background:
-                  "rgba(37,99,235,0.10)",
-
-                border:
-                  "1px solid rgba(59,130,246,0.10)",
-
-                color: "#3B82F6",
-
-                fontSize: "12px",
-
-                fontWeight: "600",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginBottom: "18px",
               }}
             >
-              AI Engine Active
+
+              <Newspaper
+                size={18}
+                color="#3B82F6"
+              />
+
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "700",
+                }}
+              >
+                Market News
+              </h3>
+
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "14px",
+              }}
+            >
+
+              {news.map((item, index) => (
+
+                <div
+                  key={index}
+                  style={{
+                    paddingBottom: "14px",
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+
+                  <h4
+                    style={{
+                      fontSize: "12px",
+                      lineHeight: "18px",
+                      fontWeight: "600",
+                      color: "#E5E7EB",
+                    }}
+                  >
+                    {item.title}
+                  </h4>
+
+                  <p
+                    style={{
+                      marginTop: "6px",
+                      fontSize: "11px",
+                      color: "#7B849A",
+                    }}
+                  >
+                    {item.source?.name}
+                  </p>
+
+                </div>
+              ))}
+
             </div>
 
           </div>
